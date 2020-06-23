@@ -1,0 +1,109 @@
+Sub Ticker()
+Dim Change() As Double
+Dim Change2() As Double
+Dim comp As Integer
+Dim y As Integer
+y = 0
+Dim x As Double
+Dim Count As Double
+Count = ActiveSheet.UsedRange.Rows.Count
+
+
+For x = 2 To Count
+     comp = StrComp(Cells(x - 1, 1), Cells(x, 1))
+        If comp <> 0 Then
+            y = y + 1
+        End If
+Next x
+'MsgBox y
+ReDim Change(y - 1)
+ReDim Change2(y - 1)
+y = 0
+
+For x = 2 To Count
+    comp = StrComp(Cells(x - 1, 1), Cells(x, 1))
+     If comp <> 0 Then
+            Cells(y + 2, 9).Value = Cells(x, 1)
+            Change(y) = x
+            y = y + 1
+     End If
+Next x
+
+'MsgBox y
+'MsgBox (UBound(Change, 1) + 2)
+
+For x = 0 To (UBound(Change, 1) - 1)
+    Change2(x) = Change(x + 1) - 1
+Next x
+
+Change2(UBound(Change, 1)) = Count
+
+
+
+
+Dim b As Double
+Dim c As Double
+
+For x = 0 To UBound(Change, 1)
+    b = Cells(Change(x), 3).Value
+    c = Cells(Change2(x), 6).Value
+'MsgBox Change(4)
+
+    Cells(x + 2, 10).Value = (c - b)
+    Cells(x + 2, 11).Value = (((c - b) / b))
+   ' Cells(x + 2, 11).Value = CStr(Cells(x + 2, 11).Value) + "%"
+Next x
+
+
+Dim Total As Double
+Total = 0
+Dim Amount As Double
+Amount = 0
+
+For x = 2 To Count
+     If x = Change2(Total) Then
+        Amount = Amount + Cells(x, 7).Value
+        Cells(Total + 2, 12).Value = Amount
+        Total = Total + 1
+        Amount = 0
+     Else
+         Amount = Amount + Cells(x, 7).Value
+     End If
+Next x
+
+Dim Max As Double
+Max = 0
+Dim Large As Double
+Dim Min
+Min = 0
+Dim Small As Double
+Dim Vol As Double
+Vol = 0
+Dim Ume As Double
+
+For x = 2 To (UBound(Change, 1) + 2)
+    If Cells(x, 11).Value > Max Then
+        Max = Cells(x, 11).Value
+        Large = x
+    ElseIf Cells(x, 11).Value < Min Then
+        Min = Cells(x, 11).Value
+        Small = x
+    End If
+    If Cells(x, 12).Value > Vol Then
+        Vol = Cells(x, 12).Value
+        Ume = x
+    End If
+Next x
+
+
+Cells(2, 15).Value = Cells(Large, 9)
+Cells(2, 16).Value = Max
+
+Cells(3, 15).Value = Cells(Small, 9)
+Cells(3, 16).Value = Min
+
+Cells(4, 15).Value = Cells(Ume, 9)
+Cells(4, 16).Value = Vol
+     
+MsgBox "done"
+End Sub
